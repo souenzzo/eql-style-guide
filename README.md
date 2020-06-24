@@ -63,7 +63,7 @@ Prefer to group your resolvers by output
 
 ## Resolve it flat
 
-If it's a `1..1` relationship, keep it flat
+If it's a `1..1` relationship, keep it flat. See [Keep it flat](#keep-it-flat) from EQL
 
 ```clojure
 ;; good
@@ -112,3 +112,31 @@ If client send a thing and you need to transform, name it!
 ```
 
 # Fulcro
+
+## Use flat keys
+
+See [Keep it flat](#keep-it-flat) from EQL
+
+```
+;; good
+(defsc MainView [this {:session/keys [valid? account] :as props}]
+       {:ident (fn [] [:component/id :session])
+        :query [:session/valid?
+                :account/name
+                {:session/account (comp/get-query AccountProjectList)}]
+        :initial-state {}}
+       (div
+         (div (str "Hello, " (:account/name account) "!"))
+         (ui-account-project-list account)))
+
+;; bad: the MainView depends on AccountProjectList query/data
+(defsc MainView [this {:session/keys [valid? account] :as props}]
+       {:ident (fn [] [:component/id :session])
+        :query [:session/valid?
+                {:session/account (conj (comp/get-query AccountProjectList) :account/name)}]
+        :initial-state {}}
+       (div
+         (div (str "Hello, " (:account/name account) "!"))
+         (ui-account-project-list account)))
+```
+
