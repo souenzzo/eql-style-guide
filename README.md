@@ -117,16 +117,17 @@ If client send a thing and you need to transform, name it!
 
 See [Keep it flat](#keep-it-flat) from EQL
 
-```
+```clojure
 ;; good
-(defsc MainView [this {:session/keys [valid? account] :as props}]
+(defsc MainView [this {:account/keys [name]
+                       :session/keys [valid? account] :as props}]
        {:ident (fn [] [:component/id :session])
         :query [:session/valid?
                 :account/name
                 {:session/account (comp/get-query AccountProjectList)}]
         :initial-state {}}
        (div
-         (div (str "Hello, " (:account/name account) "!"))
+         (div (str "Hello, " name "!"))
          (ui-account-project-list account)))
 
 ;; bad: the MainView depends on AccountProjectList query/data
