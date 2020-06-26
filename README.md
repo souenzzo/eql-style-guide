@@ -98,7 +98,7 @@ With [spec](https://clojure.org/about/spec) in mind, you should trust your input
 If client send a thing and you need to transform, name it!
 
 ```clojure
-;; good :app.account/id-as-str will always be a string, :app.account/id you always be a uuid
+;; good :app.account/id-as-str will always be a string, :app.account/id will always be a uuid
 (pc/defresolver id-as-ast->id [env {:app.account/keys [id-as-str]}]
  {::pc/input  #{:app.account/id-as-str}
   ::pc/output [:app.address/id]}
@@ -110,6 +110,10 @@ If client send a thing and you need to transform, name it!
   ::pc/output [:app.address/street]}
   (db/main-address env (UUID/fromString (str id)))
 ```
+
+## DRY (Don't Repeat Yourself)
+
+If your resolvers follow a similar process to resolve the data, make sure that you factor it away in a separate function that will exist only once in your codebase. You can use the (::pc/transform key)[https://wilkerlucio.github.io/pathom/#connect-transform] for this purpose
 
 # Fulcro
 
