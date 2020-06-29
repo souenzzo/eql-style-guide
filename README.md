@@ -113,7 +113,7 @@ If client send a thing and you need to transform, name it!
 
 ## DRY (Don't Repeat Yourself)
 
-If your resolvers follow a similar process to resolve the data, make sure that you factor it away in a separate function that will exist only once in your codebase. You can use the (::pc/transform key)[https://wilkerlucio.github.io/pathom/#connect-transform] for this purpose
+If your resolvers follow a similar process to resolve the data, make sure that you factor it away in a separate function that will exist only once in your codebase. You can use the [::pc/transform key](https://wilkerlucio.github.io/pathom/#connect-transform) for this purpose.
 
 # Fulcro
 
