@@ -117,6 +117,8 @@ If your resolvers follow a similar process to resolve the data, make sure that y
 
 ## Security
 
+> Please join [this issue](https://github.com/souenzzo/eql-style-guide/issues/4) and share your problems/solutions with us.
+
 Be careful using attribute-based authentication with `p/ident-reader` and `p/open-ident-reader`. Consider the following case:
 
 ```clojure
