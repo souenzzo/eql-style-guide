@@ -115,6 +115,55 @@ If client send a thing and you need to transform, name it!
 
 If your resolvers follow a similar process to resolve the data, make sure that you factor it away in a separate function that will exist only once in your codebase. You can use the [::pc/transform key](https://wilkerlucio.github.io/pathom/#connect-transform) for this purpose.
 
+## Security
+
+> Please join [this issue](https://github.com/souenzzo/eql-style-guide/issues/4) and share your problems/solutions with us.
+
+Be careful using attribute-based authentication with `p/ident-reader` and `p/open-ident-reader`. Consider the following case:
+
+```clojure
+(pc/defresolver authed-account [env _]
+  {::pc/input  #{}
+   ::pc/output [:app.authed-account/email]}
+  (when-let [email (some-auth-logic env)]
+    {:app.authed-account/email email}))
+
+(pc/defresolver sensitive-data [{:keys [parser] :as env}
+                                {:app.authed-account/keys [email]}]
+  {;; (1) do NOT require input for auth
+   ::pc/input  #{:app.authed-account/email}
+   ::pc/output [:sensitive-data]}
+  (when-let [{:app.authed-account/keys [email]}
+             ;; (2) do NOT call parser with current env for auth attr
+             (seq (parser env [:app.authed-account/email]))]
+    {:sensitive-data [,,,]}))
+```
+
+In this case, sensitive data can be retrieved by providing context in the query:
+```clojure
+[{[:app.authed-account/email "admin@email.com"]
+  [:sensitive-data]}]
+```
+
+Instead, prefer either calling parser without entity:
+```clojure
+(let [entity-key (or (::p/entity-key env) ::p/entity)]
+  (parser (dissoc env entity-key) [:app.authed-account/email]))
+```
+
+Or add a parser, closured against the initial value of the env, to the env:
+```clojure
+(defn make-parser []
+  (let [parser (p/parser {,,,})]
+    (fn wrapped-parser [env tx]
+      (parser
+        (assoc env :parser* (partial wrapped-parser env))
+        tx))))
+;; then inside resolvers
+(let [{:keys [parser*]} env]
+  (parser* [:app.authed-account/email]))
+```
+
 # Fulcro
 
 ## Use flat keys
