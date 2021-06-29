@@ -17,9 +17,10 @@ If you have `1..1` relationship, it should be accessible without a `join`
 [:app.current-session/token
  :app.account/display-name]
 
-;; good: it's OK to have a explicit relationship attribute between them
+;; good: it's OK to have a explicit relationship attribute between them, but keeping it flat
+;; adds more leverage, because in flat paths you only need to know the end-point, but nested
+;; data requires the knowing of each item in the path.
 [:app.current-session/token
- :app.account/display-name
  {:app.current-session/account [:app.account/display-name]}]
 ```
 
